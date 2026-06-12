@@ -1,5 +1,4 @@
 // api/analyze.js — Vercel Serverless Function
-// Proxy request đến Claude API, ẩn key phía server
 
 const CLAUDE_MODEL = 'claude-opus-4-6';
 
@@ -37,6 +36,7 @@ Số 0: ẩn tàng, làm mờ từ trường liền kề. Số 5: biến động
 - Sức khỏe: chỉ gợi ý chăm sóc, KHÔNG chẩn đoán
 - Nữ + đuôi 19/91: nhắc nhẹ về cân bằng gia đình; Nữ + đuôi 16/61: cảnh báo tình cảm
 - CTA: nếu điểm < 65 hoặc có cảnh báo → gợi ý xem số khác; nếu có ≥2 cảnh báo → gợi ý tư vấn 1-1
+- Tất cả văn bản trong JSON phải trên 1 dòng, KHÔNG xuống dòng trong string value
 
 ## OUTPUT FORMAT
 
@@ -76,12 +76,10 @@ Trả về JSON hợp lệ, KHÔNG có markdown code block, KHÔNG có giải th
 }`;
 
 export default async function handler(req, res) {
-  // CORS headers — cho phép frontend gọi từ bất kỳ domain nào
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -95,22 +93,24 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server chưa cấu hình API key' });
   }
 
-  const { phone, gender, birth, birthtime, marital, job, job_detail } = req.body;
+  const { fullname, phone, email, gender, birth, birthtime, marital, job, job_detail, simtime } = req.body;
 
   if (!phone || !gender || !marital || !job) {
     return res.status(400).json({ error: 'Thiếu thông tin bắt buộc' });
   }
 
-  const birthStr = birth || 'Không rõ';
   const prompt = `Phân tích số điện thoại sau:
 
+Họ tên: ${fullname || 'Không rõ'}
 Số điện thoại: ${phone}
+Email: ${email || 'Không cung cấp'}
 Giới tính: ${gender}
-Ngày sinh: ${birthStr}${birthtime ? ` lúc ${birthtime}` : ''}
+Ngày sinh: ${birth || 'Không rõ'}${birthtime ? ` lúc ${birthtime}` : ''}
 Tình trạng hôn nhân: ${marital}
-Nghề nghiệp: ${job}${job_detail ? ` (${job_detail})` : ''}
+Nghề nghiệp: ${job}${job_detail ? ` — Chi tiết: ${job_detail}` : ''}
+Thời gian dùng SIM: ${simtime || 'Không rõ'}
 
-Trả về JSON theo đúng cấu trúc đã quy định. KHÔNG bao gồm markdown, chỉ JSON thuần.`;
+Trả về JSON theo đúng cấu trúc đã quy định. KHÔNG bao gồm markdown, chỉ JSON thuần. KHÔNG xuống dòng trong string values.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -129,7 +129,7 @@ Trả về JSON theo đúng cấu trúc đã quy định. KHÔNG bao gồm markd
     });
 
     if (!response.ok) {
-      const errData = await response.json();
+      const errData = await response.json().catch(() => ({}));
       return res.status(response.status).json({
         error: errData.error?.message || `Claude API error ${response.status}`,
       });
@@ -138,13 +138,21 @@ Trả về JSON theo đúng cấu trúc đã quy định. KHÔNG bao gồm markd
     const data = await response.json();
     const rawText = data.content[0].text.trim();
 
-    // Extract JSON (phòng trường hợp Claude wrap trong ```)
+    // Extract JSON
     const match = rawText.match(/\{[\s\S]*\}/);
     if (!match) {
-      return res.status(500).json({ error: 'Không parse được JSON từ Claude', raw: rawText.slice(0, 500) });
+      return res.status(500).json({ error: 'Không parse được JSON từ Claude' });
     }
 
-    // Clean JSON string — loại bỏ ký tự control characters gây lỗi parse
-    let jsonStr = match[0];
-    // Thay thế newline/tab bên trong string values
-    jsonStr = jsonStr.replace(/[
+    try {
+      const result = JSON.parse(match[0]);
+      return res.status(200).json(result);
+    } catch (parseErr) {
+      return res.status(500).json({ error: 'JSON parse error: ' + parseErr.message });
+    }
+
+  } catch (err) {
+    console.error('analyze error:', err);
+    return res.status(500).json({ error: err.message || 'Lỗi server không xác định' });
+  }
+}
