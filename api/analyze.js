@@ -4,6 +4,46 @@
 const CLAUDE_MODEL = 'claude-opus-4-6';
 
 // ─────────────────────────────────────────────────────────────────
+//  SAFE JSON PARSER
+//  Xử lý: newline thật trong string, smart quotes, ký tự lạ
+// ─────────────────────────────────────────────────────────────────
+function safeParseJSON(raw) {
+  // Thử parse thẳng trước
+  try { return JSON.parse(raw); } catch(_) {}
+
+  // Làm sạch từng bước
+  let s = raw;
+
+  // 1. Thay smart quotes thành straight quotes
+  s = s.replace(/[“”„‟″‶]/g, '"');
+  s = s.replace(/[‘’‚‛′‵]/g, "'");
+
+  // 2. Thay newline/tab/CR THẬT bên trong JSON string values thành space
+  //    Cách: chỉ thay khi nằm bên trong cặp dấu " " (không escape)
+  //    Dùng state machine đơn giản
+  let result = '';
+  let inString = false;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === '"' && (i === 0 || s[i-1] !== '\\')) {
+      inString = !inString;
+      result += ch;
+    } else if (inString && (ch === '\n' || ch === '\r' || ch === '\t')) {
+      // Thay ký tự xuống dòng thật trong string thành space
+      result += ' ';
+    } else {
+      result += ch;
+    }
+  }
+
+  try { return JSON.parse(result); } catch(_) {}
+
+  // 3. Fallback: strip mọi control chars
+  s = result.replace(/[\x00-\x1F\x7F]/g, ' ');
+  return JSON.parse(s);
+}
+
+// ─────────────────────────────────────────────────────────────────
 //  BẢNG TỪ TRƯỜNG
 // ─────────────────────────────────────────────────────────────────
 const TU_TRUONG_MAP = {
@@ -441,25 +481,13 @@ Hãy dùng thông tin trên để phân tích sâu theo hệ thống Bát Cực 
     const match = rawText.match(/\{[\s\S]*\}/);
     if (!match) return res.status(500).json({ error: 'Không parse được JSON từ Claude' });
 
-    // Làm sạch: thay thế newline/tab thật sự bên trong string values thành escaped
-    // Dùng JSON.parse với reviver không giúp được — phải làm sạch raw string
-    let cleaned = match[0];
-    // Thay thế các ký tự xuống dòng thật sự bên trong JSON string bằng \n escaped
-    // Cách an toàn: thay thế tất cả newline/CR/tab thật sự thành space
-    cleaned = cleaned.replace(/[\r\n\t]/g, ' ');
-    // Thu gọn khoảng trắng nhiều thành 1 (chỉ bên ngoài string — đủ dùng)
-    cleaned = cleaned.replace(/  +/g, ' ');
-
     let result;
     try {
-      result = JSON.parse(cleaned);
+      result = safeParseJSON(match[0]);
     } catch(parseErr) {
-      // Fallback: thử parse thô không làm sạch
-      try {
-        result = JSON.parse(match[0]);
-      } catch(e2) {
-        return res.status(500).json({ error: 'JSON parse error: ' + parseErr.message });
-      }
+      // Log raw để debug
+      console.error('Raw Claude output (first 500):', match[0].slice(0, 500));
+      return res.status(500).json({ error: 'JSON parse error: ' + parseErr.message });
     }
 
     // Ghi đè dữ liệu server vào result (để đảm bảo nhất quán)
