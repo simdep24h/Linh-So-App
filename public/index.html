@@ -374,6 +374,10 @@ async function handleSubmit(e) {
   const dob        = (dob_day && dob_month && dob_year) ? `${dob_day}/${dob_month}/${dob_year}` : '';
 
   if (!fullname || !phone) return alert('Vui lòng nhập họ tên và số điện thoại.');
+  // Validate số điện thoại: đúng 10 số và bắt đầu bằng 0
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (phoneDigits.length !== 10) return alert('Số điện thoại phải có đúng 10 chữ số.');
+  if (phoneDigits[0] !== '0') return alert('Số điện thoại phải bắt đầu bằng số 0.');
   if (!gender)   return alert('Vui lòng chọn giới tính.');
   if (!marital)  return alert('Vui lòng chọn tình trạng hôn nhân.');
   if (!job)      return alert('Vui lòng chọn nghề nghiệp.');
