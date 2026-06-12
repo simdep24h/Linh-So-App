@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cố Vấn Linh Số — Phân Tích Năng Lượng Số Điện Thoại</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --muted: #94a3b8;
+      --text: #1e293b; --text-light: #64748b;
+      --primary: #6366f1; --primary-light: #eef2ff; --primary-hover: #4f46e5;
+      --green: #16a34a; --green-bg: #f0fdf4; --green-border: #bbf7d0;
+      --red: #dc2626; --red-bg: #fef2f2; --red-border: #fecaca;
+      --yellow: #d97706; --yellow-bg: #fffbeb;
+      --radius: 12px; --radius-sm: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+    .container { max-width: 680px; margin: 0 auto; padding: 24px 16px 80px; }
+
+    .header { text-align: center; padding: 32px 0 40px; }
+    .header-icon { font-size: 42px; margin-bottom: 10px; }
+    .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -.5px; }
+    .header p { color: var(--text-light); font-size: 15px; margin-top: 6px; }
+
+    .progress-wrap { margin-bottom: 32px; }
+    .progress-labels { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .progress-labels span { font-size: 12px; color: var(--muted); }
+    .progress-labels span.active { color: var(--primary); font-weight: 600; }
+    .progress-track { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 99px; transition: width .4s ease; }
+
+    .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; box-shadow: var(--shadow); }
+    .step-number { font-size: 12px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .step-title { font-size: 20px; font-weight: 700; }
+    .step-desc { font-size: 14px; color: var(--text-light); margin-top: 4px; margin-bottom: 24px; }
+
+    .field { margin-bottom: 18px; }
+    label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    label .required { color: var(--red); margin-left: 2px; }
+    input, select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; color: var(--text); background: var(--surface); transition: border-color .2s, box-shadow .2s; outline: none; }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+    .field-error { font-size: 12px; color: var(--red); margin-top: 4px; display: none; }
+    .field-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .radio-option { flex: 1; min-width: 100px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; cursor: pointer; transition: all .18s; text-align: center; font-size: 14px; font-weight: 500; user-select: none; }
+    .radio-option:hover { border-color: var(--primary); background: var(--primary-light); }
+    .radio-option.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+    .radio-option input { display: none; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 28px; }
+    .btn { flex: 1; padding: 12px 20px; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { background: var(--muted); cursor: not-allowed; }
+    .btn-ghost { background: var(--bg); color: var(--text-light); border: 1px solid var(--border); flex: 0 0 auto; padding: 12px 18px; }
+    .btn-ghost:hover { background: var(--border); }
+
+    .loading-state { text-align: center; padding: 48px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+    .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-state p { color: var(--text-light); font-size: 14px; }
+    .loading-state .sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    .result-wrap { display: flex; flex-direction: column; gap: 16px; }
+
+    .result-header-card { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); border-radius: var(--radius); padding: 24px; color: #fff; }
+    .result-phone { font-size: 28px; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
+    .result-name { font-size: 14px; opacity: .85; }
+    .score-row { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+    .score-circle { width: 72px; height: 72px; border: 3px solid rgba(255,255,255,.4); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+    .score-num { font-size: 26px; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 10px; opacity: .8; text-transform: uppercase; letter-spacing: .5px; }
+    .score-meta { flex: 1; }
+    .score-field-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .score-advice { margin-top: 10px; background: rgba(255,255,255,.15); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; }
+
+    .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); }
+    .info-card-title { font-size: 13px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+    .info-card p { font-size: 14px; line-height: 1.7; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .detail-grid { grid-template-columns: 1fr; } }
+    .detail-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
+    .detail-item .di-icon { font-size: 22px; margin-bottom: 4px; }
+    .detail-item .di-title { font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+    .detail-item .di-text { font-size: 13px; line-height: 1.6; }
+
+    .warn-card { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius); padding: 18px 20px; }
+    .warn-card .warn-title { font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 8px; }
+    .warn-card p { font-size: 13px; color: #7f1d1d; line-height: 1.7; }
+    .warn-resolve { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--red-border); }
+    .warn-resolve .wr-label { font-size: 11px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
+    .cta-card { background: var(--yellow-bg); border: 1px solid #fde68a; border-radius: var(--radius); padding: 18px 20px; }
+    .cta-card .cta-title { font-size: 14px; font-weight: 700; color: var(--yellow); margin-bottom: 8px; }
+    .cta-card p { font-size: 13px; color: #78350f; line-height: 1.7; }
+    .cta-btns { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .cta-btn { padding: 9px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .18s; }
+    .cta-btn-primary { background: var(--yellow); color: #fff; }
+    .cta-btn-primary:hover { background: #b45309; }
+    .cta-btn-outline { background: transparent; color: var(--yellow); border: 1.5px solid var(--yellow); }
+    .cta-btn-outline:hover { background: var(--yellow-bg); }
+
+    .menh-card { background: var(--primary-light); border: 1px solid #c7d2fe; border-radius: var(--radius); padding: 18px 20px; }
+    .menh-card .menh-title { font-size: 13px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+    .menh-card p { font-size: 14px; color: #312e81; line-height: 1.7; }
+
+    .pairs-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .pair-chip { display: inline-flex; flex-direction: column; align-items: center; padding: 6px 12px; border-radius: 8px; font-size: 13px; min-width: 54px; }
+    .pair-chip .pn { font-size: 16px; font-weight: 700; }
+    .pair-chip .pf { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 1px; }
+    .pair-chip.cat { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .pair-chip.hung { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+    .pair-chip.neutral { background: #f1f5f9; color: var(--text-light); border: 1px solid var(--border); }
+
+    .restart-row { text-align: center; margin-top: 8px; }
+    .btn-restart { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 20px; font-size: 14px; color: var(--text-light); cursor: pointer; font-family: inherit; transition: all .18s; }
+    .btn-restart:hover { background: var(--border); color: var(--text); }
+
+    .confirm-table { background: var(--bg); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px; display: grid; gap: 10px; }
+    .confirm-row { display: flex; gap: 8px; align-items: baseline; }
+    .confirm-key { font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 140px; }
+    .confirm-val { font-size: 14px; font-weight: 600; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-icon">🔮</div>
+    <h1>Cố Vấn Linh Số</h1>
+    <p>Phân tích năng lượng số điện thoại theo hệ thống Bát Cực Linh Số</p>
+  </div>
+
+  <!-- WIZARD -->
+  <div id="wizard">
+    <div class="progress-wrap">
+      <div class="progress-labels" id="progressLabels"></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <div class="step-card" id="stepCard"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loadingState" class="hidden">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Đang phân tích năng lượng số điện thoại...</p>
+      <p class="sub">Cố Vấn Linh Số đang đọc từ trường của bạn ✨</p>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultState" class="hidden">
+    <div class="result-wrap" id="resultWrap"></div>
+    <div class="restart-row" style="margin-top:24px;">
+      <button class="btn-restart" onclick="restart()">🔄 Phân tích số khác</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STEPS = [
+  { id: 'phone',   label: 'Số ĐT' },
+  { id: 'birth',   label: 'Ngày sinh' },
+  { id: 'gender',  label: 'Giới tính' },
+  { id: 'status',  label: 'Hôn nhân' },
+  { id: 'job',     label: 'Nghề nghiệp' },
+  { id: 'confirm', label: 'Xác nhận' },
+];
+const data = {};
+let currentStep = 0;
+
+window.onload = () => renderStep();
+
+function renderStep() {
+  const total = STEPS.length;
+  const pct = (currentStep / (total - 1)) * 100;
+  document.getElementById('progressLabels').innerHTML = STEPS.map((s, i) =>
+    `<span class="${i === currentStep ? 'active' : ''}">${s.label}</span>`).join('');
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('stepCard').innerHTML = getStepHTML(currentStep);
+}
+
+function nav(canBack = true, lastStep = false) {
+  return `<div class="btn-row">
+    ${canBack ? `<button class="btn btn-ghost" onclick="prevStep()">← Quay lại</button>` : ''}
+    <button class="btn btn-primary" onclick="nextStep()">
+      ${lastStep ? '🔮 Phân tích ngay' : 'Tiếp theo →'}
+    </button>
+  </div>`;
+}
+
+function getStepHTML(step) {
+  if (step === 0) return `
+    <div class="step-number">Bước 1 / 6</div>
+    <div class="step-title">Số điện thoại</div>
+    <div class="step-desc">Nhập số điện thoại cần phân tích năng lượng</div>
+    <div class="field">
+      <label for="s_phone">Số điện thoại <span class="required">*</span></label>
+      <input type="tel" id="s_phone" placeholder="0912 345 678"
+        value="${data.phone||''}" oninput="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="11"/>
+      <div class="field-hint">Nhập 10–11 chữ số, không cần dấu chấm/cách</div>
+      <div id="err_phone" class="field-error">Vui lòng nhập số điện thoại hợp lệ (10–11 số)</div>
+    </div>
+    ${nav(false)}`;
+
+  if (step === 1) return `
+    <div class="step-number">Bước 2 / 6</div>
+    <div class="step-title">Ngày sinh</div>
+    <div class="step-desc">Dùng để đối chiếu với mệnh chủ, giúp kết quả chính xác hơn</div>
+    <div class="field">
+      <label for="s_birth">Ngày / Tháng / Năm sinh <span class="required">*</span></label>
+      <input type="date" id="s_birth" value="${data.birth||''}" max="${new Date().toISOString().split('T')[0]}"/>
+    </div>
+    <div class="field">
+      <label for="s_birth_text">Nhập thủ công (nếu không chọn được lịch)</label>
+      <input type="text" id="s_birth_text" placeholder="15/03/1990" value="${data.birth_text||''}" maxlength="10"/>
+    </div>
+    <div class="field">
+      <label for="s_birthtime">Giờ sinh (tùy chọn)</label>
+      <input type="time" id="s_birthtime" value="${data.birthtime||''}"/>
+      <div class="field-hint">Nếu nhớ giờ sinh, kết quả sẽ chính xác hơn</div>
+    </div>
+    <div id="err_birth" class="field-error">Vui lòng nhập ngày sinh</div>
+    ${nav()}`;
+
+  if (step === 2) return `
+    <div class="step-number">Bước 3 / 6</div>
+    <div class="step-title">Giới tính</div>
+    <div class="step-desc">Một số từ trường có ý nghĩa khác nhau với nam và nữ</div>
+    <div class="field">
+      <div class="radio-group">
+        ${['Nam','Nữ'].map(v => `
+          <label class="radio-option ${data.gender===v?'selected':''}" onclick="sel('gender','${v}',this)">
+            <input type="radio" name="gender" value="${v}"/> ${v==='Nam'?'👨':'👩'} ${v}
+          </label>`).join('')}
+      </div>
+      <div id="err_gender" class="field-error">Vui lòng chọn giới tính</div>
+    </div>
+    ${nav()}`;
+
+  if (step === 3) return `
+    <div class="step-number">Bước 4 / 6</div>
+    <div class="step-title">Tình trạng hôn nhân</div>
+    <div class="step-desc">Giúp cá nhân hóa phân tích tình cảm và gia đình</div>
+    <div class="field">
+      <div class="radio-group" style="flex-wrap:wrap;">
+        ${[['Độc thân','💫'],['Đã kết hôn','💍'],['Đã ly hôn','💔'],['Góa','🕯️']].map(([v,ic]) => `
+          <label class="radio-option ${data.marital===v?'selected':''}" onclick="sel('marital','${v}',this)">
+            <input type="radio" name="marital" value="${v}"/> ${ic} ${v}
+          </label>`).join('')}
+      </div>
+      <div id="err_marital" class="field-error">Vui lòng chọn tình trạng hôn nhân</div>
+    </div>
+    ${nav()}`;
+
+  if (step === 4) return `
+    <div class="step-number">Bước 5 / 6</div>
+    <div class="step-title">Nghề nghiệp</div>
+    <div class="step-desc">Để phân tích sự nghiệp phù hợp với thực tế của bạn</div>
+    <div class="field">
+      <label for="s_job">Nghề nghiệp hiện tại <span class="required">*</span></label>
+      <select id="s_job">
+        <option value="">-- Chọn nhóm nghề --</option>
+        ${['Kinh doanh / Buôn bán','Quản lý / Lãnh đạo','Kỹ thuật / Công nghệ',
+           'Giáo dục / Giảng dạy','Y tế / Sức khỏe','Sáng tạo / Nghệ thuật',
+           'Bất động sản / Đầu tư','Tài chính / Ngân hàng','Nội trợ / Gia đình',
+           'Sinh viên / Học sinh','Nghỉ hưu','Khác'].map(j =>
+          `<option value="${j}" ${data.job===j?'selected':''}>${j}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field">
+      <label for="s_job_detail">Mô tả thêm (tùy chọn)</label>
+      <input type="text" id="s_job_detail" placeholder="VD: chủ cửa hàng thời trang..." value="${data.job_detail||''}"/>
+    </div>
+    <div id="err_job" class="field-error">Vui lòng chọn nghề nghiệp</div>
+    ${nav()}`;
+
+  if (step === 5) {
+    const b = data.birth_text || (data.birth ? data.birth.split('-').reverse().join('/') : 'Chưa nhập');
+    return `
+      <div class="step-number">Bước 6 / 6</div>
+      <div class="step-title">Xác nhận thông tin</div>
+      <div class="step-desc">Kiểm tra lại trước khi phân tích</div>
+      <div class="confirm-table">
+        ${[['📱 Số điện thoại', data.phone],
+           ['🎂 Ngày sinh', b+(data.birthtime?` lúc ${data.birthtime}`:'')],
+           ['👤 Giới tính', data.gender],
+           ['💍 Hôn nhân', data.marital],
+           ['💼 Nghề nghiệp', data.job+(data.job_detail?` — ${data.job_detail}`:'')]
+          ].map(([k,v]) => `<div class="confirm-row"><span class="confirm-key">${k}</span><span class="confirm-val">${v}</span></div>`).join('')}
+      </div>
+      <p style="font-size:13px;color:var(--text-light);">Nhấn <strong>Phân tích ngay</strong> để bắt đầu. Quá trình mất khoảng 10–20 giây.</p>
+      ${nav(true, true)}`;
+  }
+}
+
+function sel(field, val, el) {
+  data[field] = val;
+  document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function prevStep() { if (currentStep > 0) { currentStep--; renderStep(); } }
+
+function nextStep() {
+  if (!validate(currentStep)) return;
+  collect(currentStep);
+  if (currentStep === STEPS.length - 1) runAnalysis();
+  else { currentStep++; renderStep(); }
+}
+
+function validate(step) {
+  const hide = id => { const e = document.getElementById(id); if(e) e.style.display='none'; };
+  const show = id => { const e = document.getElementById(id); if(e) e.style.display='block'; };
+  if (step === 0) {
+    const v = document.getElementById('s_phone').value.trim();
+    if (!v || v.length < 10 || v.length > 11) { show('err_phone'); return false; }
+    hide('err_phone');
+  }
+  if (step === 1) {
+    const v = document.getElementById('s_birth').value;
+    const t = document.getElementById('s_birth_text').value.trim();
+    if (!v && !t) { show('err_birth'); return false; }
+    hide('err_birth');
+  }
+  if (step === 2) { if (!data.gender) { show('err_gender'); return false; } hide('err_gender'); }
+  if (step === 3) { if (!data.marital) { show('err_marital'); return false; } hide('err_marital'); }
+  if (step === 4) {
+    const v = document.getElementById('s_job').value;
+    if (!v) { show('err_job'); return false; }
+    hide('err_job');
+  }
+  return true;
+}
+
+function collect(step) {
+  if (step === 0) data.phone = document.getElementById('s_phone').value.trim();
+  if (step === 1) {
+    data.birth = document.getElementById('s_birth').value;
+    data.birth_text = document.getElementById('s_birth_text').value.trim();
+    data.birthtime = document.getElementById('s_birthtime').value;
+  }
+  if (step === 4) {
+    data.job = document.getElementById('s_job').value;
+    data.job_detail = document.getElementById('s_job_detail').value.trim();
+  }
+}
+
+// ===== API CALL — gọi server /api/analyze thay vì Claude trực tiếp =====
+async function runAnalysis() {
+  document.getElementById('wizard').classList.add('hidden');
+  document.getElementById('loadingState').classList.remove('hidden');
+
+  const birthStr = data.birth_text || (data.birth ? data.birth.split('-').reverse().join('/') : '');
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: data.phone,
+        gender: data.gender,
+        birth: birthStr,
+        birthtime: data.birthtime || '',
+        marital: data.marital,
+        job: data.job,
+        job_detail: data.job_detail || '',
+      }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) throw new Error(result.error || `Lỗi server ${res.status}`);
+
+    document.getElementById('loadingState').classList.add('hidden');
+    renderResult(result);
+  } catch (e) {
+    document.getElementById('loadingState').classList.add('hidden');
+    renderError(e.message);
+  }
+}
+
+// ===== RENDER RESULT =====
+function hl(text) {
+  if (!text) return '';
+  ['Thiên Y','Sinh Khí','Diên Niên','Phụ Vị'].forEach(f => {
+    text = text.replaceAll(f, `<span style="color:var(--green);font-weight:700">${f}</span>`);
+  });
+  ['Tuyệt Mệnh','Ngũ Quỷ','Lục Sát','Họa Hại'].forEach(f => {
+    text = text.replaceAll(f, `<span style="color:var(--red);font-weight:700">${f}</span>`);
+  });
+  return text;
+}
+
+function fmtPhone(p) {
+  if (!p) return '';
+  const d = p.replace(/\D/g,'');
+  if (d.length === 10) return `${d.slice(0,4)}.${d.slice(4,7)}.${d.slice(7)}`;
+  if (d.length === 11) return `${d.slice(0,4)}.${d.slice(4,8)}.${d.slice(8)}`;
+  return p;
+}
+
+function renderResult(r) {
+  document.getElementById('resultState').classList.remove('hidden');
+  const wrap = document.getElementById('resultWrap');
+  const score = parseInt(r.tom_tat?.diem) || 50;
+  let html = '';
+
+  // Header card
+  html += `<div class="result-header-card">
+    <div class="result-name">${data.gender} · ${data.job} · ${data.marital}</div>
+    <div class="result-phone">${fmtPhone(data.phone)}</div>
+    <div class="score-row">
+      <div class="score-circle">
+        <span class="score-num">${score}</span>
+        <span class="score-label">điểm</span>
+      </div>
+      <div class="score-meta">
+        <div class="score-field-name">Từ trường chủ đạo: ${r.tom_tat?.tu_truong_chu_dao||'—'}</div>
+        <div style="font-size:13px;opacity:.9">${r.tom_tat?.mo_ta||''}</div>
+        ${r.tom_tat?.loi_khuyen?`<div class="score-advice">💡 ${r.tom_tat.loi_khuyen}</div>`:''}
+      </div>
+    </div>
+  </div>`;
+
+  // Chips cặp số
+  if (r.cac_cap_so?.length) {
+    const chips = r.cac_cap_so.map(c => {
+      const cls = c.loai==='hung'?'hung':c.loai==='cat'?'cat':'neutral';
+      const short = (c.tu_truong||'').split(' ').pop().substring(0,3).toUpperCase();
+      return `<div class="pair-chip ${cls}" title="${c.tu_truong||''}">
+        <span class="pn">${c.cap}</span><span class="pf">${short}</span></div>`;
+    }).join('');
+    html += `<div class="info-card">
+      <div class="info-card-title">🔢 Phân tích các cặp số</div>
+      <div class="pairs-row">${chips}</div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">
+        <span style="color:var(--green);font-weight:600">■</span> Cát tinh &nbsp;
+        <span style="color:var(--red);font-weight:600">■</span> Hung tinh &nbsp;
+        <span style="color:var(--muted);font-weight:600">■</span> Trung tính
+      </p>
+    </div>`;
+  }
+
+  // 4 chi tiết
+  if (r.chi_tiet) {
+    const items = [
+      {icon:'💰',title:'Tài vận',text:r.chi_tiet.tai_van},
+      {icon:'💑',title:'Tình cảm',text:r.chi_tiet.tinh_cam},
+      {icon:'💼',title:'Sự nghiệp',text:r.chi_tiet.su_nghiep},
+      {icon:'🤝',title:'Quý nhân',text:r.chi_tiet.quy_nhan},
+    ].filter(i=>i.text);
+    if (items.length) {
+      html += `<div class="detail-grid">${items.map(i=>`
+        <div class="detail-item">
+          <div class="di-icon">${i.icon}</div>
+          <div class="di-title">${i.title}</div>
+          <div class="di-text">${hl(i.text)}</div>
+        </div>`).join('')}</div>`;
+    }
+  }
+
+  // Sức khỏe
+  if (r.suc_khoe) {
+    html += `<div class="info-card">
+      <div class="info-card-title">🏥 Sức khỏe & chăm sóc bản thân</div>
+      <p>${hl(r.suc_khoe)}</p>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;">* Chỉ mang tính tham khảo. Luôn thăm khám bác sĩ khi có lo ngại.</p>
+    </div>`;
+  }
+
+  // Cảnh báo
+  if (r.canh_bao?.co) {
+    html += `<div class="warn-card">
+      <div class="warn-title">⚠️ Lưu ý năng lượng</div>
+      <p>${hl(r.canh_bao.noi_dung||'')}</p>
+      ${r.canh_bao.hoa_giai?`<div class="warn-resolve">
+        <div class="wr-label">Gợi ý cân bằng</div>
+        <p>${r.canh_bao.hoa_giai}</p></div>`:''}
+    </div>`;
+  }
+
+  // Mệnh
+  if (r.phu_hop_menh) {
+    html += `<div class="menh-card">
+      <div class="menh-title">☯️ Đối chiếu mệnh chủ</div>
+      <p>${hl(r.phu_hop_menh)}</p>
+    </div>`;
+  }
+
+  // CTA
+  const cta = r.cta||{};
+  html += `<div class="cta-card">
+    <div class="cta-title">✨ Bước tiếp theo</div>
+    ${cta.nen_doi_so?`<p><strong>Gợi ý đổi số:</strong> ${cta.ly_do_doi||''}</p>`:''}
+    <p style="margin-top:${cta.nen_doi_so?'8px':'0'}">${cta.moi_tu_van||'Để hiểu sâu hơn về vận mệnh, bạn có thể đặt lịch tư vấn 1-1 cùng chuyên gia.'}</p>
+    <div class="cta-btns">
+      ${cta.nen_doi_so?`<button class="cta-btn cta-btn-primary" onclick="alert('Tính năng SIM sẽ sớm ra mắt!')">📱 Xem SIM phù hợp</button>`:''}
+      <button class="cta-btn cta-btn-outline" onclick="alert('Tính năng đặt lịch sẽ sớm ra mắt!')">📅 Đặt lịch tư vấn 1-1</button>
+    </div>
+  </div>`;
+
+  wrap.innerHTML = html;
+}
+
+function renderError(msg) {
+  document.getElementById('resultState').classList.remove('hidden');
+  document.getElementById('resultWrap').innerHTML = `
+    <div class="warn-card">
+      <div class="warn-title">❌ Có lỗi xảy ra</div>
+      <p>${msg}</p>
+    </div>`;
+}
+
+function restart() {
+  Object.keys(data).forEach(k => delete data[k]);
+  currentStep = 0;
+  document.getElementById('resultState').classList.add('hidden');
+  document.getElementById('wizard').classList.remove('hidden');
+  renderStep();
+}
+</script>
+</body>
+</html>
