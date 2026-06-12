@@ -141,14 +141,10 @@ Trả về JSON theo đúng cấu trúc đã quy định. KHÔNG bao gồm markd
     // Extract JSON (phòng trường hợp Claude wrap trong ```)
     const match = rawText.match(/\{[\s\S]*\}/);
     if (!match) {
-      return res.status(500).json({ error: 'Không parse được JSON từ Claude' });
+      return res.status(500).json({ error: 'Không parse được JSON từ Claude', raw: rawText.slice(0, 500) });
     }
 
-    const result = JSON.parse(match[0]);
-    return res.status(200).json(result);
-
-  } catch (err) {
-    console.error('analyze error:', err);
-    return res.status(500).json({ error: err.message || 'Lỗi server không xác định' });
-  }
-}
+    // Clean JSON string — loại bỏ ký tự control characters gây lỗi parse
+    let jsonStr = match[0];
+    // Thay thế newline/tab bên trong string values
+    jsonStr = jsonStr.replace(/[
