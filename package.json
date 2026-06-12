@@ -1,0 +1,13 @@
+{
+  "name": "linh-so-app",
+  "version": "1.0.0",
+  "description": "Cố Vấn Linh Số — Phân tích năng lượng số điện thoại",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
