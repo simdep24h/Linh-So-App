@@ -441,11 +441,25 @@ Hãy dùng thông tin trên để phân tích sâu theo hệ thống Bát Cực 
     const match = rawText.match(/\{[\s\S]*\}/);
     if (!match) return res.status(500).json({ error: 'Không parse được JSON từ Claude' });
 
+    // Làm sạch: thay thế newline/tab thật sự bên trong string values thành escaped
+    // Dùng JSON.parse với reviver không giúp được — phải làm sạch raw string
+    let cleaned = match[0];
+    // Thay thế các ký tự xuống dòng thật sự bên trong JSON string bằng \n escaped
+    // Cách an toàn: thay thế tất cả newline/CR/tab thật sự thành space
+    cleaned = cleaned.replace(/[\r\n\t]/g, ' ');
+    // Thu gọn khoảng trắng nhiều thành 1 (chỉ bên ngoài string — đủ dùng)
+    cleaned = cleaned.replace(/  +/g, ' ');
+
     let result;
     try {
-      result = JSON.parse(match[0]);
+      result = JSON.parse(cleaned);
     } catch(parseErr) {
-      return res.status(500).json({ error: 'JSON parse error: ' + parseErr.message });
+      // Fallback: thử parse thô không làm sạch
+      try {
+        result = JSON.parse(match[0]);
+      } catch(e2) {
+        return res.status(500).json({ error: 'JSON parse error: ' + parseErr.message });
+      }
     }
 
     // Ghi đè dữ liệu server vào result (để đảm bảo nhất quán)
