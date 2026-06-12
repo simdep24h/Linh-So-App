@@ -260,7 +260,7 @@ async function sendResultEmail(formData, result, score) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
       body: JSON.stringify({
-        from: 'Cố Vấn Linh Số <noreply@simdep24h.com>',
+        from: 'Co Van Linh So <noreply@simdep24h.vn>',
         to: [formData.email],
         subject: `🔮 Kết quả phân tích Bát Cực Linh Số — ${formData.phone}`,
         html,
