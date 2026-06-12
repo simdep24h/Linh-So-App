@@ -23,6 +23,8 @@
       --green-dim: rgba(34,197,94,0.1);
       --red: #ef4444;
       --red-dim: rgba(239,68,68,0.1);
+      --orange: #f97316;
+      --orange-dim: rgba(249,115,22,0.1);
       --radius: 14px;
       --radius-sm: 9px;
     }
@@ -42,96 +44,41 @@
     .hero { text-align: center; padding: 44px 0 40px; }
     .hero-logo { font-size: 52px; animation: float 4s ease-in-out infinite; display: block; filter: drop-shadow(0 0 16px rgba(245,208,32,0.45)); }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-    .hero-brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px; font-weight: 600; letter-spacing: 4px;
-      text-transform: uppercase; color: var(--gold3); margin: 10px 0 6px;
-    }
-    .hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 36px; font-weight: 700;
-      background: linear-gradient(135deg, var(--gold2), var(--gold3), var(--gold));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 8px; line-height: 1.2;
-    }
+    .hero-brand { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--gold3); margin: 10px 0 6px; }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; background: linear-gradient(135deg, var(--gold2), var(--gold3), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; line-height: 1.2; }
     .hero-sub { color: var(--text-muted); font-size: 14px; font-weight: 300; }
     .divider { display: flex; align-items: center; gap: 12px; margin: 20px auto; max-width: 280px; }
     .divider span { flex:1; height:1px; background: linear-gradient(to right, transparent, var(--border2), transparent); }
     .divider em { color: var(--gold); font-style: normal; font-size: 16px; }
 
     /* FORM CARD */
-    .form-card {
-      background: var(--navy2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px 32px;
-      position: relative; overflow: hidden;
-      box-shadow: 0 4px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(245,208,32,0.08);
-    }
-    .form-card::before {
-      content: '';
-      position: absolute; top:0;left:0;right:0;height:2px;
-      background: linear-gradient(90deg, transparent, var(--gold), var(--gold2), var(--gold), transparent);
-    }
-    .form-section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 17px; color: var(--gold3); font-weight: 600;
-      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
-    }
+    .form-card { background: var(--navy2); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px 32px; position: relative; overflow: hidden; box-shadow: 0 4px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(245,208,32,0.08); }
+    .form-card::before { content: ''; position: absolute; top:0;left:0;right:0;height:2px; background: linear-gradient(90deg, transparent, var(--gold), var(--gold2), var(--gold), transparent); }
+    .form-section-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--gold3); font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
     .form-section-title::after { content:''; flex:1; height:1px; background: linear-gradient(to right, var(--border2), transparent); }
 
-    /* Fields — mỗi field 1 hàng */
     .field { margin-bottom: 18px; }
-    label {
-      display: block; font-size: 11px; font-weight: 500;
-      letter-spacing: 1.2px; text-transform: uppercase;
-      color: var(--text-muted); margin-bottom: 7px;
-    }
+    label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; }
     label .req { color: var(--gold); margin-left: 2px; }
 
-    input, select, textarea {
-      width: 100%; padding: 12px 15px;
-      background: var(--navy3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text); font-size: 15px; font-family: 'Inter', sans-serif;
-      outline: none; transition: border-color .2s, box-shadow .2s;
-      -webkit-appearance: none;
-    }
+    input, select, textarea { width: 100%; padding: 12px 15px; background: var(--navy3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 15px; font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s, box-shadow .2s; -webkit-appearance: none; }
     input::placeholder, textarea::placeholder { color: rgba(138,154,184,0.4); }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(200,150,12,0.15);
-    }
+    input:focus, select:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,150,12,0.15); }
     select { cursor: pointer; }
     select option { background: #0f1e38; color: #e8dfc0; }
     textarea { resize: vertical; min-height: 70px; }
 
-    /* Radio chips — mỗi nhóm 1 hàng */
+    /* Ngày sinh — 3 select ngang */
+    .dob-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    /* Radio chips */
     .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
-    .radio-option {
-      flex: 1; min-width: 90px; padding: 11px 14px;
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      background: var(--navy3); color: var(--text-muted);
-      font-size: 14px; font-weight: 500; text-align: center;
-      cursor: pointer; transition: all .18s; user-select: none;
-    }
+    .radio-option { flex: 1; min-width: 90px; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--navy3); color: var(--text-muted); font-size: 14px; font-weight: 500; text-align: center; cursor: pointer; transition: all .18s; user-select: none; }
     .radio-option:hover { border-color: var(--gold3); color: var(--gold3); }
-    .radio-option.selected {
-      border-color: var(--gold); background: var(--gold-dim);
-      color: var(--gold3); box-shadow: 0 0 10px rgba(200,150,12,0.2);
-    }
+    .radio-option.selected { border-color: var(--gold); background: var(--gold-dim); color: var(--gold3); box-shadow: 0 0 10px rgba(200,150,12,0.2); }
 
     /* Submit */
-    .btn-submit {
-      width: 100%; padding: 15px; margin-top: 10px;
-      background: linear-gradient(135deg, var(--gold), var(--gold2), var(--gold));
-      background-size: 200% 100%; background-position: 0% 0%;
-      border: none; border-radius: var(--radius-sm);
-      color: var(--navy); font-size: 16px; font-weight: 700;
-      letter-spacing: 1px; cursor: pointer;
-      transition: all .3s; font-family: 'Inter', sans-serif;
-    }
+    .btn-submit { width: 100%; padding: 15px; margin-top: 10px; background: linear-gradient(135deg, var(--gold), var(--gold2), var(--gold)); background-size: 200% 100%; background-position: 0% 0%; border: none; border-radius: var(--radius-sm); color: var(--navy); font-size: 16px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all .3s; font-family: 'Inter', sans-serif; }
     .btn-submit:hover { background-position: 100% 0%; box-shadow: 0 6px 24px rgba(200,150,12,0.35); transform: translateY(-1px); }
     .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
@@ -146,22 +93,12 @@
     .hidden { display: none !important; }
     .result-wrap { display: flex; flex-direction: column; gap: 18px; }
 
-    .result-header {
-      background: linear-gradient(135deg, #0d1e3e, #0a1628);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius); padding: 30px 28px; text-align: center;
-      position: relative; overflow: hidden;
-    }
+    .result-header { background: linear-gradient(135deg, #0d1e3e, #0a1628); border: 1px solid var(--border2); border-radius: var(--radius); padding: 30px 28px; text-align: center; position: relative; overflow: hidden; }
     .result-header::before { content:''; position:absolute;top:0;left:0;right:0;height:2px; background: linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent); }
     .result-name-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
     .result-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--gold3); font-weight: 700; }
     .result-phone { font-size: 28px; font-weight: 600; color: #fff; letter-spacing: 3px; margin: 6px 0 4px; }
-    .score-ring {
-      display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
-      width: 96px; height: 96px; border-radius: 50%;
-      border: 2px solid var(--gold); background: radial-gradient(circle, rgba(200,150,12,0.12), transparent);
-      margin: 18px auto 10px; box-shadow: 0 0 28px rgba(200,150,12,0.25);
-    }
+    .score-ring { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 96px; height: 96px; border-radius: 50%; border: 2px solid var(--gold); background: radial-gradient(circle, rgba(200,150,12,0.12), transparent); margin: 18px auto 10px; box-shadow: 0 0 28px rgba(200,150,12,0.25); }
     .score-num { font-size: 34px; font-weight: 700; color: var(--gold2); line-height: 1; }
     .score-label { font-size: 11px; color: var(--gold); letter-spacing: 1px; }
     .score-field { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--gold3); margin-bottom: 10px; }
@@ -171,14 +108,27 @@
     .card { background: var(--navy2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; }
     .card-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--gold3); margin-bottom: 14px; }
 
+    /* Pair chips — hiển thị tên đầy đủ */
     .pairs-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .pair-chip { display: inline-flex; flex-direction: column; align-items: center; padding: 7px 11px; border-radius: 8px; border: 1px solid; min-width: 50px; }
+    .pair-chip {
+      display: inline-flex; flex-direction: column; align-items: center;
+      padding: 8px 12px; border-radius: 8px; border: 1px solid;
+      min-width: 60px;
+    }
     .pair-chip.cat { border-color: var(--green); background: var(--green-dim); color: var(--green); }
     .pair-chip.hung { border-color: var(--red); background: var(--red-dim); color: var(--red); }
     .pair-chip.neutral { border-color: var(--border2); background: rgba(22,36,64,0.6); color: var(--text-muted); }
-    .pair-chip .pn { font-weight: 700; font-size: 14px; }
-    .pair-chip .pf { font-size: 10px; opacity: 0.8; margin-top: 1px; }
-    .legend { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+    .pair-chip.special { border-color: var(--orange); background: var(--orange-dim); color: var(--orange); }
+    .pair-chip .pn { font-weight: 700; font-size: 15px; }
+    .pair-chip .pf { font-size: 10px; opacity: 0.85; margin-top: 2px; white-space: nowrap; }
+    .pair-chip .note { font-size: 9px; opacity: 0.7; margin-top: 1px; }
+
+    /* Hung liên thủ banner */
+    .hung-chain-banner { margin-top: 12px; padding: 10px 14px; background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; }
+    .hung-chain-banner .hcb-title { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--red); margin-bottom: 4px; font-weight: 600; }
+    .hung-chain-banner .hcb-text { font-size: 13px; color: var(--text-muted); }
+
+    .legend { display: flex; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
     .legend span { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -213,6 +163,9 @@
 
     .restart-btn { display: block; margin: 4px auto 0; padding: 10px 26px; background: transparent; border: 1px solid var(--border); border-radius: 99px; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all .2s; font-family: 'Inter', sans-serif; }
     .restart-btn:hover { border-color: var(--gold3); color: var(--gold3); }
+
+    /* Email notice */
+    .email-notice { margin-top: 10px; padding: 10px 14px; background: rgba(34,197,94,0.07); border: 1px solid rgba(34,197,94,0.18); border-radius: 8px; font-size: 13px; color: var(--green); text-align: center; }
   </style>
 </head>
 <body>
@@ -245,6 +198,24 @@
       <div class="field">
         <label>Email</label>
         <input type="email" id="email" placeholder="email@example.com" />
+      </div>
+
+      <div class="field">
+        <label>Ngày Tháng Năm Sinh</label>
+        <div class="dob-row">
+          <select id="dob_day">
+            <option value="">Ngày</option>
+            <script>for(let d=1;d<=31;d++) document.write(`<option value="${d}">${d}</option>`);</script>
+          </select>
+          <select id="dob_month">
+            <option value="">Tháng</option>
+            <script>const mn=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12']; mn.forEach((m,i)=>document.write(`<option value="${i+1}">${m}</option>`));</script>
+          </select>
+          <select id="dob_year">
+            <option value="">Năm</option>
+            <script>for(let y=new Date().getFullYear()-10;y>=1940;y--) document.write(`<option value="${y}">${y}</option>`);</script>
+          </select>
+        </div>
       </div>
 
       <div class="field">
@@ -321,6 +292,9 @@
 
 </div>
 <script>
+// ============================================================
+//  RADIO SELECTION
+// ============================================================
 const sel = { gender: null, marital: null, simtime: null };
 
 document.querySelectorAll('.radio-option').forEach(el => {
@@ -332,6 +306,58 @@ document.querySelectorAll('.radio-option').forEach(el => {
   });
 });
 
+// ============================================================
+//  GOOGLE SHEET WEBHOOK
+//  Thay SHEET_WEBHOOK_URL bằng URL Apps Script Web App của bạn
+// ============================================================
+const SHEET_WEBHOOK_URL = 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL';
+
+async function saveToSheet(formData, result) {
+  if (!SHEET_WEBHOOK_URL || SHEET_WEBHOOK_URL.startsWith('REPLACE')) return;
+  try {
+    await fetch(SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        timestamp:  new Date().toLocaleString('vi-VN'),
+        ho_ten:     formData.fullname,
+        so_dt:      formData.phone,
+        email:      formData.email,
+        ngay_sinh:  formData.dob,
+        gioi_tinh:  formData.gender,
+        hon_nhan:   formData.marital,
+        nghe_nghiep: formData.job,
+        chi_tiet_cv: formData.job_detail,
+        thoi_gian_sim: formData.simtime,
+        diem:       result.tom_tat?.diem,
+        tu_truong:  result.tom_tat?.tu_truong_chu_dao,
+        nen_doi:    result.cta?.nen_doi_so ? 'Có' : 'Không',
+        canh_bao:   result.canh_bao?.co ? result.canh_bao.noi_dung : '',
+      })
+    });
+  } catch(e) {
+    console.warn('Sheet webhook failed:', e);
+  }
+}
+
+// ============================================================
+//  TỪ TRƯỜNG CHIP — Tên đầy đủ viết tắt gọn
+// ============================================================
+const TU_TRUONG_SHORT = {
+  'Thiên Y':     'Thiên Y',
+  'Sinh Khí':    'Sinh Khí',
+  'Diên Niên':   'Diên Niên',
+  'Phụ Vị':      'Phụ Vị',
+  'Tuyệt Mệnh':  'Tuyệt Mệnh',
+  'Ngũ Quỷ':     'Ngũ Quỷ',
+  'Lục Sát':     'Lục Sát',
+  'Họa Hại':     'Họa Hại',
+};
+
+// ============================================================
+//  SUBMIT
+// ============================================================
 async function handleSubmit(e) {
   e.preventDefault();
   const fullname   = document.getElementById('fullname').value.trim();
@@ -342,6 +368,10 @@ async function handleSubmit(e) {
   const gender     = sel.gender;
   const marital    = sel.marital;
   const simtime    = sel.simtime;
+  const dob_day    = document.getElementById('dob_day').value;
+  const dob_month  = document.getElementById('dob_month').value;
+  const dob_year   = document.getElementById('dob_year').value;
+  const dob        = (dob_day && dob_month && dob_year) ? `${dob_day}/${dob_month}/${dob_year}` : '';
 
   if (!fullname || !phone) return alert('Vui lòng nhập họ tên và số điện thoại.');
   if (!gender)   return alert('Vui lòng chọn giới tính.');
@@ -353,15 +383,21 @@ async function handleSubmit(e) {
   document.getElementById('loadingState').classList.remove('hidden');
   document.getElementById('resultState').classList.add('hidden');
 
+  const formData = { fullname, phone, email, dob, gender, marital, job, job_detail, simtime };
+
   try {
     const res = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullname, phone, email, gender, marital, job, job_detail, simtime })
+      body: JSON.stringify(formData)
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Lỗi server');
-    renderResult(data, { fullname, phone });
+
+    // Lưu Google Sheet (background, không block UI)
+    saveToSheet(formData, data);
+
+    renderResult(data, { fullname, phone, email });
   } catch(err) {
     document.getElementById('loadingState').classList.add('hidden');
     document.getElementById('resultState').classList.remove('hidden');
@@ -372,6 +408,9 @@ async function handleSubmit(e) {
   document.getElementById('resultState').classList.remove('hidden');
 }
 
+// ============================================================
+//  HIGHLIGHT TỪTRƯỜNG TRONG TEXT
+// ============================================================
 function hl(text) {
   if (!text) return '';
   ['Thiên Y','Sinh Khí','Diên Niên','Phụ Vị'].forEach(n => {
@@ -389,10 +428,38 @@ function fmtPhone(p) {
   return p;
 }
 
+// ============================================================
+//  PHÂN TÍCH HUNG LIÊN THỦ & KẾTĐUÔI (client-side display)
+// ============================================================
+function analyzeChains(caps) {
+  if (!caps || !caps.length) return { chains: [], tailHung: false };
+  const hung_names = ['Tuyệt Mệnh','Ngũ Quỷ','Lục Sát','Họa Hại'];
+  const chains = [];
+  let i = 0;
+  while (i < caps.length) {
+    if (caps[i].loai === 'hung') {
+      let j = i;
+      while (j < caps.length && caps[j].loai === 'hung') j++;
+      if (j - i >= 2) {
+        chains.push(caps.slice(i, j).map(c => c.tu_truong).join(' → '));
+      }
+      i = j;
+    } else i++;
+  }
+  // 3 cặp đuôi
+  const tail = caps.slice(-3);
+  const tailHung = tail.filter(c => c.loai === 'hung').length >= 2;
+  return { chains, tailHung };
+}
+
+// ============================================================
+//  RENDER KẾT QUẢ
+// ============================================================
 function renderResult(r, meta) {
   const score = parseInt(r.tom_tat?.diem) || 50;
   let html = '';
 
+  // Header
   html += `<div class="result-header">
     <div class="result-name-tag">Kết quả phân tích cho</div>
     <div class="result-name">${meta.fullname}</div>
@@ -406,23 +473,53 @@ function renderResult(r, meta) {
     ${r.tom_tat?.loi_khuyen?`<div class="score-advice">💡 ${r.tom_tat.loi_khuyen}</div>`:''}
   </div>`;
 
+  // Cặp số — tên đầy đủ + hung liên thủ
   if (r.cac_cap_so?.length) {
-    const chips = r.cac_cap_so.map(c => {
-      const cls = c.loai==='hung'?'hung':c.loai==='cat'?'cat':'neutral';
-      const short = (c.tu_truong||'').split(' ').slice(-1)[0]?.substring(0,3).toUpperCase()||'';
-      return `<div class="pair-chip ${cls}" title="${c.tu_truong||''}"><span class="pn">${c.cap}</span><span class="pf">${short}</span></div>`;
+    const { chains, tailHung } = analyzeChains(r.cac_cap_so);
+
+    const chips = r.cac_cap_so.map((c, idx) => {
+      let cls = c.loai === 'hung' ? 'hung' : c.loai === 'cat' ? 'cat' : 'neutral';
+      // Đánh dấu special nếu là số 5 hoặc số 0 ẩn
+      if (c.ghi_chu) cls = 'special';
+      const tenDayDu = TU_TRUONG_SHORT[c.tu_truong] || c.tu_truong || '';
+      const ghiChu = c.ghi_chu ? `<span class="note">${c.ghi_chu}</span>` : '';
+      return `<div class="pair-chip ${cls}" title="${c.tu_truong||''}">
+        <span class="pn">${c.cap}</span>
+        <span class="pf">${tenDayDu}</span>
+        ${ghiChu}
+      </div>`;
     }).join('');
+
+    let chainHtml = '';
+    if (chains.length) {
+      chains.forEach(ch => {
+        chainHtml += `<div class="hung-chain-banner">
+          <div class="hcb-title">⚠️ Hung Tinh Liên Thủ</div>
+          <div class="hcb-text">${hl(ch)}</div>
+        </div>`;
+      });
+    }
+    if (tailHung) {
+      chainHtml += `<div class="hung-chain-banner">
+        <div class="hcb-title">🔴 Hung Tinh Kết Đuôi</div>
+        <div class="hcb-text">3 cặp số cuối chứa từ trường tiêu cực — năng lượng kết thúc bất lợi, ảnh hưởng tài vận và kết quả dài hạn.</div>
+      </div>`;
+    }
+
     html += `<div class="card">
       <div class="card-title">🔢 Phân tích cặp số</div>
       <div class="pairs-row">${chips}</div>
+      ${chainHtml}
       <div class="legend">
         <span><span style="color:var(--green)">■</span> Cát tinh</span>
         <span><span style="color:var(--red)">■</span> Hung tinh</span>
+        <span><span style="color:var(--orange)">■</span> Ẩn tàng (0/5)</span>
         <span><span style="color:var(--text-muted)">■</span> Trung tính</span>
       </div>
     </div>`;
   }
 
+  // Chi tiết 4 chiều
   if (r.chi_tiet) {
     const items = [
       {icon:'💰',title:'Tài Vận',text:r.chi_tiet.tai_van},
@@ -440,6 +537,7 @@ function renderResult(r, meta) {
     }
   }
 
+  // Sức khỏe
   if (r.suc_khoe) {
     html += `<div class="card">
       <div class="card-title">🌿 Sức Khỏe & Chăm Sóc</div>
@@ -448,6 +546,7 @@ function renderResult(r, meta) {
     </div>`;
   }
 
+  // Cảnh báo
   if (r.canh_bao?.co) {
     html += `<div class="warn-card">
       <div class="warn-title">⚠️ Lưu Ý Năng Lượng</div>
@@ -459,6 +558,7 @@ function renderResult(r, meta) {
     </div>`;
   }
 
+  // Mệnh
   if (r.phu_hop_menh) {
     html += `<div class="menh-card">
       <div class="menh-title">☯️ Đối Chiếu Mệnh Chủ</div>
@@ -466,16 +566,22 @@ function renderResult(r, meta) {
     </div>`;
   }
 
+  // CTA
   const cta = r.cta||{};
   html += `<div class="cta-card">
     <div class="cta-title">✦ Bước Tiếp Theo</div>
     ${cta.nen_doi_so?`<p style="color:var(--gold3);font-size:14px;margin-bottom:8px"><strong>Gợi ý đổi số:</strong> ${cta.ly_do_doi||''}</p>`:''}
     <p class="cta-text">${cta.moi_tu_van||'Để hiểu sâu hơn về vận mệnh của bạn, hãy đặt lịch tư vấn 1-1 cùng chuyên gia.'}</p>
     <div class="cta-btns">
-      ${cta.nen_doi_so?`<button class="cta-btn cta-btn-primary" onclick="alert('Tính năng SIM sẽ sớm ra mắt!')">📱 Xem SIM Phù Hợp</button>`:''}
-      <button class="cta-btn cta-btn-outline" onclick="alert('Tính năng đặt lịch sẽ sớm ra mắt!')">📅 Đặt Lịch Tư Vấn</button>
+      ${cta.nen_doi_so?`<button class="cta-btn cta-btn-primary" onclick="window.open('https://simdep24h.com','_blank')">📱 Xem SIM Phù Hợp</button>`:''}
+      <button class="cta-btn cta-btn-outline" onclick="window.open('https://m.me/simdep24h','_blank')">📅 Đặt Lịch Tư Vấn</button>
     </div>
   </div>`;
+
+  // Email notice
+  if (meta.email) {
+    html += `<div class="email-notice">✉️ Kết quả phân tích đã được gửi về email <strong>${meta.email}</strong></div>`;
+  }
 
   document.getElementById('resultWrap').innerHTML = html;
 }
