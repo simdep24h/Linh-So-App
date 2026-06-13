@@ -191,14 +191,13 @@ Trả lời bằng XML TAGS như sau. Viết thẳng nội dung vào tag, không
 <moi_tu_van>Lời mời tư vấn 1-1 (1 câu)</moi_tu_van>`;
 
 // ─────────────────────────────────────────────────────────────────
-//  GOOGLE SHEET
+//  GỬI WEBHOOK → MAKE.COM (xử lý cả Sheet + Email)
 // ─────────────────────────────────────────────────────────────────
-const SHEET_SCRIPT_URL = process.env.SHEET_SCRIPT_URL || '';
-
-async function saveToSheet(formData, result, score) {
-  if (!SHEET_SCRIPT_URL) return;
+async function sendToMake(formData, result, score) {
+  const makeUrl = process.env.MAKE_WEBHOOK_URL;
+  if (!makeUrl) return;
   try {
-    await fetch(SHEET_SCRIPT_URL, {
+    await fetch(makeUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -216,58 +215,14 @@ async function saveToSheet(formData, result, score) {
         tu_truong:     result.tom_tat?.tu_truong_chu_dao || '',
         nen_doi:       result.cta?.nen_doi_so ? 'Có' : 'Không',
         canh_bao:      result.canh_bao?.co ? result.canh_bao.noi_dung : '',
+        mo_ta:         result.tom_tat?.mo_ta || '',
+        loi_khuyen:    result.tom_tat?.loi_khuyen || '',
+        moi_tu_van:    result.cta?.moi_tu_van || '',
       })
     });
-  } catch(e) { console.warn('Sheet save failed:', e.message); }
+  } catch(e) { console.warn('Make webhook failed:', e.message); }
 }
 
-// ─────────────────────────────────────────────────────────────────
-//  GỬI EMAIL (Resend)
-// ─────────────────────────────────────────────────────────────────
-async function sendResultEmail(formData, result, score) {
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey || !formData.email) return;
-  const scoreColor = score >= 70 ? '#22c55e' : score >= 50 ? '#e8b84b' : '#ef4444';
-  const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#0a1628;font-family:Arial,sans-serif;">
-<div style="max-width:560px;margin:0 auto;padding:32px 16px;">
-  <div style="text-align:center;margin-bottom:28px;">
-    <div style="font-size:40px;">🔮</div>
-    <h1 style="color:#e8b84b;font-size:22px;margin:8px 0 4px;">CỐ VẤN LINH SỐ</h1>
-    <p style="color:#8a9ab8;font-size:13px;margin:0;">Simdep24h · Phong Thuỷ Số</p>
-  </div>
-  <div style="background:#0f1e38;border:1px solid rgba(197,155,40,0.3);border-top:3px solid #c8960c;border-radius:12px;padding:28px 24px;margin-bottom:20px;text-align:center;">
-    <p style="color:#8a9ab8;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin:0 0 6px;">Kết quả phân tích cho</p>
-    <p style="color:#e8b84b;font-size:22px;font-weight:700;margin:0 0 4px;">${formData.fullname || ''}</p>
-    <p style="color:#fff;font-size:22px;font-weight:600;letter-spacing:4px;margin:0 0 16px;">${formData.phone || ''}</p>
-    <span style="display:inline-block;width:72px;height:72px;border-radius:50%;border:2px solid #c8960c;background:rgba(200,150,12,0.1);line-height:72px;text-align:center;color:${scoreColor};font-size:28px;font-weight:700;">${score}</span>
-  </div>
-  <div style="background:#0f1e38;border:1px solid rgba(197,155,40,0.2);border-radius:12px;padding:22px 24px;margin-bottom:16px;">
-    <h2 style="color:#e8b84b;font-size:15px;margin:0 0 10px;">📊 Tổng quan</h2>
-    <p style="color:#c8c0a8;font-size:14px;margin:0 0 10px;">${result.tom_tat?.mo_ta || ''}</p>
-    ${result.tom_tat?.loi_khuyen ? `<p style="color:#e8b84b;font-size:13px;padding:10px 14px;background:rgba(200,150,12,0.1);border-left:2px solid #c8960c;border-radius:6px;margin:0;">💡 ${result.tom_tat.loi_khuyen}</p>` : ''}
-  </div>
-  <div style="background:linear-gradient(135deg,#0d1e3e,#0a1628);border:1px solid rgba(197,155,40,0.35);border-top:2px solid #c8960c;border-radius:12px;padding:24px;text-align:center;">
-    <h2 style="color:#e8b84b;font-size:18px;margin:0 0 12px;">✦ Bước tiếp theo</h2>
-    <p style="color:#8a9ab8;font-size:14px;margin:0 0 18px;">${result.cta?.moi_tu_van || ''}</p>
-    <a href="https://simdep24h.com" style="display:inline-block;padding:11px 22px;background:linear-gradient(135deg,#c8960c,#f5d020);color:#0a1628;font-weight:700;font-size:14px;border-radius:8px;text-decoration:none;margin-right:8px;">📱 Xem SIM Phù Hợp</a>
-    <a href="https://m.me/simdep24h" style="display:inline-block;padding:11px 22px;background:transparent;color:#e8b84b;font-weight:700;font-size:14px;border-radius:8px;text-decoration:none;border:1px solid rgba(197,155,40,0.4);">📅 Tư Vấn 1-1</a>
-  </div>
-  <p style="color:#4a5a78;font-size:11px;text-align:center;margin:20px 0 0;">Kết quả mang tính tham khảo. Simdep24h</p>
-</div></body></html>`;
-  try {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resendKey}` },
-      body: JSON.stringify({
-        from: 'Co Van Linh So <noreply@simdep24h.vn>',
-        to: [formData.email],
-        subject: `🔮 Kết quả phân tích Bát Cực Linh Số — ${formData.phone}`,
-        html,
-      }),
-    });
-  } catch(e) { console.warn('Email failed:', e.message); }
-}
 
 // ─────────────────────────────────────────────────────────────────
 //  HANDLER CHÍNH
@@ -354,12 +309,9 @@ Hãy phân tích sâu và trả lời bằng XML tags như hướng dẫn.`;
       },
     };
 
-    // Background tasks
+    // Gửi webhook Make.com (xử lý Sheet + Email)
     const formData = { fullname, phone, email, dob, gender, marital, job, job_detail, simtime };
-    Promise.all([
-      saveToSheet(formData, result, score),
-      sendResultEmail(formData, result, score),
-    ]).catch(e => console.warn('Background tasks error:', e));
+    sendToMake(formData, result, score).catch(e => console.warn('Make webhook error:', e));
 
     return res.status(200).json(result);
 
