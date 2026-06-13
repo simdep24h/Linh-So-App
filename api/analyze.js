@@ -193,11 +193,13 @@ Trả lời bằng XML TAGS như sau. Viết thẳng nội dung vào tag, không
 // ─────────────────────────────────────────────────────────────────
 //  GỬI WEBHOOK → MAKE.COM (xử lý cả Sheet + Email)
 // ─────────────────────────────────────────────────────────────────
-async function sendToMake(formData, result, score) {
-  const makeUrl = process.env.MAKE_WEBHOOK_URL;
-  if (!makeUrl) return;
+//  GỬI DỮ LIỆU → APPS SCRIPT (lưu Sheet + gửi Gmail)
+// ─────────────────────────────────────────────────────────────────
+async function sendToAppsScript(formData, result, score) {
+  const scriptUrl = process.env.SHEET_SCRIPT_URL;
+  if (!scriptUrl) return;
   try {
-    await fetch(makeUrl, {
+    await fetch(scriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -220,7 +222,7 @@ async function sendToMake(formData, result, score) {
         moi_tu_van:    result.cta?.moi_tu_van || '',
       })
     });
-  } catch(e) { console.warn('Make webhook failed:', e.message); }
+  } catch(e) { console.warn('Apps Script failed:', e.message); }
 }
 
 
@@ -309,9 +311,9 @@ Hãy phân tích sâu và trả lời bằng XML tags như hướng dẫn.`;
       },
     };
 
-    // Gửi webhook Make.com (xử lý Sheet + Email)
+    // Gửi Apps Script (lưu Sheet + gửi Gmail) — await trước res.json để không bị Vercel kill
     const formData = { fullname, phone, email, dob, gender, marital, job, job_detail, simtime };
-    sendToMake(formData, result, score).catch(e => console.warn('Make webhook error:', e));
+    await sendToAppsScript(formData, result, score);
 
     return res.status(200).json(result);
 
