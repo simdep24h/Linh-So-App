@@ -215,12 +215,12 @@ async function sendToAppsScript(formData, result, score) {
         chi_tiet_cv:   formData.job_detail || '',
         thoi_gian_sim: formData.simtime || '',
         diem:          score,
-        tu_truong:     result.tom_tat?.tu_truong_chu_dao || '',
-        nen_doi:       result.cta?.nen_doi_so ? 'Có' : 'Không',
-        canh_bao:      result.canh_bao?.co ? result.canh_bao.noi_dung : '',
-        mo_ta:         result.tom_tat?.mo_ta || '',
-        loi_khuyen:    result.tom_tat?.loi_khuyen || '',
-        moi_tu_van:    result.cta?.moi_tu_van || '',
+        tu_truong:     chuDao || '',
+        nen_doi:       parsed.cta?.nen_doi_so ? 'Có' : 'Không',
+        canh_bao:      parsed.canh_bao?.co ? parsed.canh_bao.noi_dung : '',
+        mo_ta:         parsed.tom_tat?.mo_ta || '',
+        loi_khuyen:    parsed.tom_tat?.loi_khuyen || '',
+        moi_tu_van:    parsed.cta?.moi_tu_van || '',
       })
     });
   } catch(e) { console.warn('Apps Script failed:', e.message); }
