@@ -201,7 +201,8 @@ async function sendToAppsScript(formData, result, score) {
   try {
     await fetch(scriptUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({
         timestamp:     new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
         ho_ten:        formData.fullname || '',
